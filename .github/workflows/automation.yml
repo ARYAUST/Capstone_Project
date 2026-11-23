@@ -1,4 +1,4 @@
-name: API Tests
+name: API and UI Tests
 
 on:
   push:
@@ -7,8 +7,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
+  api-tests:
     runs-on: ubuntu-latest
+    name: API Tests
 
     steps:
       - name: Checkout Code
@@ -25,11 +26,40 @@ jobs:
 
       - name: Run API Tests
         run: |
-          pytest api/tests/test_brands_api.py api/tests/test_getallproducts_api.py api/tests/test_searchproducts_api.py --html=report.html --self-contained-html
+          pytest api/tests/test_brands_api.py api/tests/test_getallproducts_api.py api/tests/test_searchproducts_api.py --reruns 2 --html=reports/api-report.html --self-contained-html
 
-      - name: Upload HTML Report
+      - name: Upload API HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: api-test-report
-          path: report.html
+          path: reports/api-report.html
+
+  ui-tests:
+    runs-on: ubuntu-latest
+    name: UI Tests
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+          python -m playwright install --with-deps chromium
+
+      - name: Run UI Tests
+        run: |
+          pytest tests/ui --reruns 2 --html=reports/ui-report.html --self-contained-html
+
+      - name: Upload UI HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-report
+          path: reports/ui-report.html
