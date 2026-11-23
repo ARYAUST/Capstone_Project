@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -25,9 +25,10 @@ jobs:
 
       - name: Run API Tests
         run: |
-          pytest tests/api --html=report.html --self-contained-html
+          pytest api/tests/test_brands_api.py api/tests/test_getallproducts_api.py api/tests/test_searchproducts_api.py --html=report.html --self-contained-html
 
       - name: Upload HTML Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: api-test-report
