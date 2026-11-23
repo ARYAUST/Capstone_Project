@@ -1,4 +1,4 @@
-def test_create_account():
+def test_create_account(api):
 
     user = {
         "name": "API User",

@@ -1,4 +1,4 @@
-def test_update_account():
+def test_update_account(api):
 
     user = {
         "name": "Updated User",
